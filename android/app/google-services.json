@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "848726928029",
+    "project_id": "nextrade-56a46",
+    "storage_bucket": "nextrade-56a46.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848726928029:android:93d4833af57e88d6ab4274",
+        "android_client_info": {
+          "package_name": "com.example.nextrade"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJ3L8dgaZb2eWTjpGJxa9zN7SHC22HUF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
