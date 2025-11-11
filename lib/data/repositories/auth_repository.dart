@@ -1,48 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../../firebase_options.dart';
 
 class AuthRepository {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth get _firebaseAuth => FirebaseAuth.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
-  /// 🔹 توليد كود إحالة فريد لكل مستخدم
-  String _generateReferralCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    final code = List.generate(6, (i) {
-      final index = (timestamp.hashCode + i * 13) % chars.length;
-      return chars[index];
-    }).join();
-    return 'NXT$code';
+  static bool _isInitialized = false;
+
+  /// 🔹 تأكد أن Firebase مهيأة مرة واحدة فقط
+  Future<void> _ensureFirebaseInitialized() async {
+    if (!_isInitialized) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      _isInitialized = true;
+      print("🔥 Firebase initialized inside AuthRepository");
+    }
   }
 
-  /// 🔹 التحقق من صحة كود الإحالة (هل موجود فعلاً؟)
-  Future<bool> _isReferralCodeValid(String code) async {
-    final snapshot = await _firestore
-        .collection('users')
-        .where('referralCode', isEqualTo: code)
-        .limit(1)
-        .get();
-
-    return snapshot.docs.isNotEmpty;
-  }
-
-  /// 🔹 تسجيل مستخدم جديد مع كود الإحالة والتحقق منه
+  /// تسجيل مستخدم جديد
   Future<User> signUp({
     required String name,
     required String email,
     required String password,
     String? referralCode,
   }) async {
-    // ✅ تحقق من كود الإحالة إن وُجد
-    if (referralCode != null && referralCode.isNotEmpty) {
-      final isValid = await _isReferralCodeValid(referralCode);
-      if (!isValid) {
-        throw Exception("❌ كود الإحالة غير صحيح أو لا يخص أي مستخدم.");
-      }
-    }
+    await _ensureFirebaseInitialized();
 
-    // ✅ إنشاء المستخدم الجديد
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -51,16 +37,14 @@ class AuthRepository {
     final user = userCredential.user!;
     final generatedCode = _generateReferralCode();
 
-    // ✅ حفظ البيانات داخل Firestore
     await _firestore.collection('users').doc(user.uid).set({
       'name': name,
       'email': email,
-      'referralCode': generatedCode, // كود المستخدم الجديد
-      'referredBy': referralCode, // كود الشخص الذي أحاله
+      'referralCode': generatedCode,
+      'referredBy': referralCode,
       'createdAt': FieldValue.serverTimestamp(),
     });
 
-    // ✅ إرسال إيميل التحقق (اختياري)
     if (!user.emailVerified) {
       await user.sendEmailVerification();
     }
@@ -68,12 +52,21 @@ class AuthRepository {
     return user;
   }
 
-  /// 🔹 تسجيل الدخول
+  /// تسجيل الدخول
   Future<User> login(String email, String password) async {
+    await _ensureFirebaseInitialized();
+
     final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
     return userCredential.user!;
+  }
+
+  // كود إحالة عشوائي
+  String _generateReferralCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final now = DateTime.now().millisecondsSinceEpoch;
+    return 'NXT${now.toString().substring(8)}';
   }
 }

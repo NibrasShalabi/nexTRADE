@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:nextrade/presentation/screens/signup/widgets/signup_screen_body.dart';
-class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nextrade/data/repositories/auth_repository.dart';
+import '../../../logic/blocs/signup/signup_bloc.dart';
+import 'widgets/signup_screen_body.dart';
+
+class SignUpScreen extends StatelessWidget {
+  const SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body:SignupScreenBody() ,
+    return BlocProvider(
+      create: (_) => SignUpBloc(AuthRepository()),
+      child: const Scaffold(
+        body: SignUpScreenBody(),
+      ),
     );
   }
 }

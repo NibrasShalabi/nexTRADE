@@ -5,6 +5,9 @@ import 'package:nextrade/core/widgets/custom_text_field.dart';
 class LoginFormSection extends StatefulWidget {
   const LoginFormSection({super.key});
 
+  static _LoginFormSectionState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_LoginFormSectionState>();
+
   @override
   State<LoginFormSection> createState() => _LoginFormSectionState();
 }
@@ -14,9 +17,14 @@ class _LoginFormSectionState extends State<LoginFormSection>
   late AnimationController _controller;
   late Animation<double> _drawerAnimation;
 
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+
+    // ✅ يبدأ الأنيميشن في كل مرة يتم بناء الصفحة فيها (يعني عند كل دخول جديد)
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2600),
@@ -31,6 +39,8 @@ class _LoginFormSectionState extends State<LoginFormSection>
   @override
   void dispose() {
     _controller.dispose();
+    emailController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -47,19 +57,20 @@ class _LoginFormSectionState extends State<LoginFormSection>
             children: [
               Transform.translate(
                 offset: Offset(0, -10 * slide),
-                child: const CustomTextField(
+                child: CustomTextField(
                   hintText: 'Email',
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
                   bottomLeft: 0,
                   bottomRight: 0,
-                  keyboardType: TextInputType.emailAddress,
-
                 ),
               ),
               Transform.translate(
                 offset: Offset(0, 10 * slide),
-                child: const CustomTextField(
+                child: CustomTextField(
                   hintText: 'Password',
                   isPassword: true,
+                  controller: passwordController,
                   topLeft: 0,
                   topRight: 0,
                 ),

@@ -2,17 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nextrade/core/widgets/custom_text_field.dart';
 
-class  SignupFormSection extends StatefulWidget {
-  const SignupFormSection ({super.key});
+class SignupFormSection extends StatefulWidget {
+  const SignupFormSection({super.key});
+
+  static _SignupFormSectionState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_SignupFormSectionState>();
 
   @override
-  State<SignupFormSection> createState() => _LoginFormSectionState();
+  State<SignupFormSection> createState() => _SignupFormSectionState();
 }
 
-class _LoginFormSectionState extends State<SignupFormSection>
+class _SignupFormSectionState extends State<SignupFormSection>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _drawerAnimation;
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
 
   @override
   void initState() {
@@ -31,6 +39,10 @@ class _LoginFormSectionState extends State<SignupFormSection>
   @override
   void dispose() {
     _controller.dispose();
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    codeController.dispose();
     super.dispose();
   }
 
@@ -47,21 +59,23 @@ class _LoginFormSectionState extends State<SignupFormSection>
             children: [
               Transform.translate(
                 offset: Offset(0, -10 * slide),
-                child: const CustomTextField(
+                child: CustomTextField(
                   hintText: 'User name',
                   bottomLeft: 0,
                   bottomRight: 0,
+                  controller: nameController, // ✅ Controller مضاف
                 ),
               ),
               Opacity(
                 opacity: slide,
                 child: Transform.scale(
                   scale: 0.9 + (0.1 * slide),
-                  child: const CustomTextField(
+                  child: CustomTextField(
                     hintText: 'Email',
                     keyboardType: TextInputType.emailAddress,
                     topLeft: 0,
                     bottomRight: 0,
+                    controller: emailController, // ✅ Controller مضاف
                   ),
                 ),
               ),
@@ -69,22 +83,24 @@ class _LoginFormSectionState extends State<SignupFormSection>
                 opacity: slide,
                 child: Transform.scale(
                   scale: 0.9 + (0.1 * slide),
-                  child: const CustomTextField(
+                  child: CustomTextField(
                     hintText: 'Password',
                     isPassword: true,
                     topRight: 0,
                     bottomLeft: 0,
+                    controller: passwordController, // ✅ Controller مضاف
                   ),
                 ),
               ),
               Transform.translate(
                 offset: Offset(0, 10 * slide),
-                child: const CustomTextField(
+                child: CustomTextField(
                   hintText: 'Verification Code (optional)',
                   isCodeField: true,
                   keyboardType: TextInputType.number,
                   topLeft: 0,
                   topRight: 0,
+                  controller: codeController, // ✅ Controller مضاف
                 ),
               ),
             ],

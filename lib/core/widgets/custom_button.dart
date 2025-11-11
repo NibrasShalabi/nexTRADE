@@ -7,6 +7,7 @@ class CustomButton extends StatefulWidget {
   final VoidCallback onPressed;
   final double width;
   final double height;
+  final bool isLoading;
 
   const CustomButton({
     super.key,
@@ -14,6 +15,7 @@ class CustomButton extends StatefulWidget {
     required this.onPressed,
     this.width = double.infinity,
     this.height = 60,
+    this.isLoading = false,
   });
 
   @override
@@ -34,7 +36,7 @@ class _CustomButtonState extends State<CustomButton> {
         onTapDown: (_) => setState(() => _isPressed = true),
         onTapUp: (_) {
           setState(() => _isPressed = false);
-          widget.onPressed();
+          if (!widget.isLoading) widget.onPressed();
         },
         onTapCancel: () => setState(() => _isPressed = false),
         child: AnimatedContainer(
@@ -61,12 +63,21 @@ class _CustomButtonState extends State<CustomButton> {
             ],
           ),
           child: Center(
-            child: AnimatedScale(
+            child: widget.isLoading
+                ? const SizedBox(
+              width: 26,
+              height: 26,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+                : AnimatedScale(
               scale: _isPressed ? 0.95 : 1.0,
               duration: const Duration(milliseconds: 200),
               child: Text(
                 widget.text,
-                style: AppTextStyle.textStyle18.copyWith(color: Colors.white),
+                style: AppTextStyle.textStyle18.copyWith(color: Colors.black),
               ),
             ),
           ),

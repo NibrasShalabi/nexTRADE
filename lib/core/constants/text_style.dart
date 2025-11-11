@@ -16,6 +16,14 @@ abstract class AppTextStyle {
   static final textStyle18 = GoogleFonts.poppins(
     fontSize: 18.sp,
     color: Colors.grey,
-    letterSpacing: 1.2
+    letterSpacing: 1.2,
+  );
+
+  static final textStyle16 = GoogleFonts.poppins(
+    fontSize: 16.sp,
+  );
+
+  static final textStyle14 = GoogleFonts.poppins(
+    fontSize: 14.sp,
   );
 }

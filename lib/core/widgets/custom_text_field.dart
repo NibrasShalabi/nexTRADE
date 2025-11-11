@@ -7,7 +7,6 @@ class CustomTextField extends StatefulWidget {
   final bool isCodeField;
   final TextInputType keyboardType;
 
-  // 🔹 زوايا الحواف
   final double topLeft;
   final double topRight;
   final double bottomLeft;
@@ -22,7 +21,7 @@ class CustomTextField extends StatefulWidget {
     this.topLeft = 18,
     this.topRight = 18,
     this.bottomLeft = 18,
-    this.bottomRight = 18,
+    this.bottomRight = 18, required TextEditingController controller,
   });
 
   @override
